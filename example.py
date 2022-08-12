@@ -1,13 +1,15 @@
 # USAGE
 # python example.py --source images/ocean_sunset.jpg --target images/ocean_day.jpg
 
-# import the necessary packages
-from color_transfer import color_transfer
-import numpy as np
 import argparse
+
 import cv2
 
-def show_image(title, image, width = 300):
+# import the necessary packages
+from color_transfer import color_transfer
+
+
+def show_image(title, image, headless, width = 300):
 	# resize the image to have a constant width, just to
 	# make displaying the images take up less screen real
 	# estate
@@ -15,8 +17,12 @@ def show_image(title, image, width = 300):
 	dim = (width, int(image.shape[0] * r))
 	resized = cv2.resize(image, dim, interpolation = cv2.INTER_AREA)
 
-	# show the resized image
-	cv2.imshow(title, resized)
+	if(headless):
+		cv2.imwrite("results"+title+".png", resized)
+
+	else:
+		# show the resized image
+		cv2.imshow(title, resized)
 
 def str2bool(v):
     if v.lower() in ('yes', 'true', 't', 'y', '1'):
@@ -52,8 +58,10 @@ transfer = color_transfer(source, target, clip=args["clip"], preserve_paper=args
 if args["output"] is not None:
 	cv2.imwrite(args["output"], transfer)
 
+# Set to headless mode, writing images rather than showing them
+headless = 1
 # show the images and wait for a key press
-show_image("Source", source)
-show_image("Target", target)
-show_image("Transfer", transfer)
+show_image("Source", source, headless)
+show_image("Target", target, headless)
+show_image("Transfer", transfer, headless)
 cv2.waitKey(0)
